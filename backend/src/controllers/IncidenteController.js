@@ -4,7 +4,6 @@ module.exports = {
   async index (request, response) {
     const { page = 1 } = request.query;
     
-    /* Estou passando o count com colchetes para acessar a posição dele dentro do array */
     const [count] = await connection('incidents').count();
 
     const incidents = await connection('incidents')
@@ -15,7 +14,6 @@ module.exports = {
             'ongs.email', 'ongs.whatsapp',
             'ongs.city', 'ongs.uf');
 
-    /* Inserindo no header da resposta o total de casos que existe no banco */
     response.header('X-Total-Count', count['count(*)'])
 
     return response.json(incidents);
@@ -43,11 +41,9 @@ module.exports = {
     .where('id', id)
     .select('ong_id')
     .first();
-    /* BUSCA O ID DA ONG E VERIFICA SE É O MESMO PASSADO PELO HEADER */
     if (incident.ong_id !== ong_id) {
       return response.status(401).json({ error: 'Operação não permitida.' });
     }
-    /* DELETA O INCIDENT */
     await connection('incidents').where('id', id).delete();
     response.status(204).send();
   }
